@@ -78,28 +78,42 @@ const ICONS: Icon[] = [
 
 export const MainScreen = () => {
 
-    const [user, setUser] = useState(1)
+    const [currentUser, setCurrentUser] = useState(1)
     const [firstChoice, setFirstChoice] = useState<Icon>({} as Icon)
     const [secondChoice, setSecondChoice] = useState<Icon>({} as Icon)
     const [whichPress, setWhichPress] = useState(1)
-    const [shownIcons, setShownIcons] = useState<any[]>([])
     const [user1Score, setUSer1Score] = useState<number>(0)
     const [user2Score, setUSer2Score] = useState<number>(0)
     const [user3Score, setUSer3Score] = useState<number>(0)
     const [user4Score, setUSer4Score] = useState<number>(0)
+    const [shownIcons, setShownIcons] = useState<any[]>([])
+    const [visibleIcons, setVisibleIcons] = useState(new Set())
 
 
 
-    useEffect(() => {
-        if (user1Score + user2Score + user3Score + user4Score == 16) {
-            Alert.alert('the winner is', "good", [{
-                text: "ok", onPress: () => {
-                    setShownIcons([]);
-                    setUser(1)
-                }
-            }])
-        }
-    })
+    // useEffect(() => {
+    //     if (user1Score + user2Score + user3Score + user4Score == 1) {
+    //         Alert.alert('Game over', "Start again", [{
+    //             text: "ok", onPress: () => {
+    //                 clearAll()
+    //             }
+    //         }])
+    //     }
+    // }, [])
+
+
+    const clearAll = () => {
+        setUSer1Score(0)
+        setUSer2Score(0)
+        setUSer3Score(0)
+        setUSer4Score(0)
+        setCurrentUser(1)
+        setShownIcons([])
+        setFirstChoice({} as Icon)
+        setSecondChoice({} as Icon)
+
+
+    }
 
 
     useEffect(() => {
@@ -109,13 +123,13 @@ export const MainScreen = () => {
         if (firstChoice?.coupleId == secondChoice?.coupleId) {
             setFirstChoice({} as Icon)
             setSecondChoice({} as Icon)
-            if (user == 1) {
+            if (currentUser == 1) {
                 setUSer1Score(p => p + 1)
             }
-            else if (user == 2) {
+            else if (currentUser == 2) {
                 setUSer2Score(p => p + 1)
             }
-            else if (user == 3) {
+            else if (currentUser == 3) {
                 setUSer3Score(p => p + 1)
             }
             else {
@@ -124,8 +138,6 @@ export const MainScreen = () => {
         }
         else if (firstChoice?.coupleId != secondChoice?.coupleId) {
             makeLater()
-            setFirstChoice({} as Icon)
-            setSecondChoice({} as Icon)
         }
     }, [whichPress])
 
@@ -133,7 +145,12 @@ export const MainScreen = () => {
         setTimeout(() => {
             const _shownIons = shownIcons.slice(0, -2)
             setShownIcons(_shownIons)
-            setUser(p => p == 4 ? 1 : p + 1)
+            visibleIcons.delete(firstChoice.id)
+            visibleIcons.delete(secondChoice.id)
+            setVisibleIcons(visibleIcons)
+            setFirstChoice({} as Icon)
+            setSecondChoice({} as Icon)
+            setCurrentUser(p => p == 4 ? 1 : p + 1)
         }, 1500)
 
     }
@@ -147,24 +164,28 @@ export const MainScreen = () => {
             const _shownIcons = [...shownIcons, el.id]
             setShownIcons(_shownIcons)
             setWhichPress(2)
+            visibleIcons.add(el.id)
+            setVisibleIcons(visibleIcons)
         }
         else {
             setSecondChoice(el)
             const _shownIcons = [...shownIcons, el.id]
             setShownIcons(_shownIcons)
             setWhichPress(1)
+            visibleIcons.add(el.id)
+            setVisibleIcons(visibleIcons)
         }
 
     }
 
     const chnageBg = () => {
-        if (user == 1) {
+        if (currentUser == 1) {
             return "#FB3640"
         }
-        else if (user == 2) {
+        else if (currentUser == 2) {
             return "#21CB88"
         }
-        else if (user == 3) {
+        else if (currentUser == 3) {
             return "#57569C"
         }
         else {
@@ -179,17 +200,17 @@ export const MainScreen = () => {
             <View style={styles.scoreRow}>
                 <View style={{
                     ...styles.scoreContainer,
-                    backgroundColor: user == 1 ? '#FB3640' : '#FFFFFF',
-                    borderColor: user == 1 ? "#FFFFFF" : "#FB3640"
+                    backgroundColor: currentUser == 1 ? '#FB3640' : '#FFFFFF',
+                    borderColor: currentUser == 1 ? "#FFFFFF" : "#FB3640"
                 }}>
-                    <Text style={{ ...styles.scoreLabel, color: user == 1 ? "#FFFFFF" : "#FB3640" }}>{user1Score}</Text>
+                    <Text style={{ ...styles.scoreLabel, color: currentUser == 1 ? "#FFFFFF" : "#FB3640" }}>{user1Score}</Text>
                 </View>
                 <View style={{
                     ...styles.scoreContainer,
-                    backgroundColor: user == 2 ? '#21CB88' : '#FFFFFF',
-                    borderColor: user == 2 ? "#FFFFFF" : "#21CB88"
+                    backgroundColor: currentUser == 2 ? '#21CB88' : '#FFFFFF',
+                    borderColor: currentUser == 2 ? "#FFFFFF" : "#21CB88"
                 }}>
-                    <Text style={{ ...styles.scoreLabel, color: user == 2 ? "#FFFFFF" : "#21CB88" }}>{user2Score}</Text>
+                    <Text style={{ ...styles.scoreLabel, color: currentUser == 2 ? "#FFFFFF" : "#21CB88" }}>{user2Score}</Text>
                 </View>
             </View>
             <View style={styles.iconsContainer}>
@@ -200,8 +221,11 @@ export const MainScreen = () => {
                                 onPress={() => { handleClick(el) }}
                                 key={el.id}
                                 style={styles.iconConatiner}>
-                                {shownIcons.includes(el?.id) ? <Image source={el.path} style={styles.icon} resizeMode={'contain'} /> :
-                                     <Image source={Qestion3} style={styles.icon} resizeMode={'contain'}/> 
+                                {
+                                    // shownIcons.includes(el?.id) 
+                                    Array.from(visibleIcons).includes(el.id)
+                                        ? <Image source={el.path} style={{ ...styles.icon, width: 45, height: 45 }} resizeMode={'contain'} /> :
+                                        <Image source={Qestion3} style={styles.icon} resizeMode={'contain'} />
                                     // <View style={styles.icon} />
                                 }
                             </TouchableOpacity>
@@ -214,20 +238,24 @@ export const MainScreen = () => {
             <View style={styles.scoreRow}>
                 <View style={{
                     ...styles.scoreContainer,
-                    backgroundColor: user == 4 ? '#F9C067' : '#FFFFFF',
-                    borderColor: user == 4 ? "#FFFFFF" : "#F9C067"
+                    backgroundColor: currentUser == 4 ? '#F9C067' : '#FFFFFF',
+                    borderColor: currentUser == 4 ? "#FFFFFF" : "#F9C067"
                 }}>
-                    <Text style={{ ...styles.scoreLabel, color: user == 4 ? "#FFFFFF" : "#F9C067" }}>{user3Score}</Text>
+                    <Text style={{ ...styles.scoreLabel, color: currentUser == 4 ? "#FFFFFF" : "#F9C067" }}>{user4Score}</Text>
                 </View>
+                <Text>{JSON.stringify(Array.from(visibleIcons))}</Text>
                 <View style={{
                     ...styles.scoreContainer,
-                    backgroundColor: user == 3 ? '#57569C' : '#FFFFFF',
-                    borderColor: user == 3 ? "#FFFFFF" : "#57569C"
+                    backgroundColor: currentUser == 3 ? '#57569C' : '#FFFFFF',
+                    borderColor: currentUser == 3 ? "#FFFFFF" : "#57569C"
                 }}>
-                    <Text style={{ ...styles.scoreLabel, color: user == 3 ? "#FFFFFF" : "#57569C" }}>{user4Score}</Text>
+                    <Text style={{ ...styles.scoreLabel, color: currentUser == 3 ? "#FFFFFF" : "#57569C" }}>{user3Score}</Text>
                 </View>
             </View>
-            <View style={styles.bottomSpace} />
+            <View style={styles.bottomSpace}>
+                <Text>{JSON.stringify(firstChoice)}</Text>
+                <Text>{JSON.stringify(secondChoice)}</Text>
+            </View>
         </View>
     )
 }
@@ -287,11 +315,12 @@ const styles = StyleSheet.create({
     scoreLabel: {
         color: "#dedede",
         fontSize: 30,
-        fontStyle:'normal',
-        fontWeight:'700'
+        fontStyle: 'normal',
+        fontWeight: '700'
     },
     bottomSpace: {
-        height: 10,
+        height: 30,
         width: "100%",
+        paddingStart: 50
     }
 })
