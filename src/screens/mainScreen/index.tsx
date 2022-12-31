@@ -51,10 +51,10 @@ const ICONS: Icon[] = [
     { id: "10", coupleId: 10, name: "hand", path: Bayern, index: Math.floor(Math.random() * 1000) },
     { id: "11", coupleId: 11, name: "hand", path: Dortmund, index: Math.floor(Math.random() * 1000) },
     { id: "12", coupleId: 12, name: "hand", path: Juventus, index: Math.floor(Math.random() * 1000) },
-    { id: "13", coupleId: 13, name: "hand", path: Inter, index: Math.floor(Math.random() * 1000) },
-    { id: "14", coupleId: 14, name: "hand", path: Milan, index: Math.floor(Math.random() * 1000) },
-    { id: "15", coupleId: 15, name: "hand", path: Mazembe, index: Math.floor(Math.random() * 1000) },
-    { id: "16", coupleId: 16, name: "hand", path: Boca, index: Math.floor(Math.random() * 1000) },
+    // { id: "13", coupleId: 13, name: "hand", path: Inter, index: Math.floor(Math.random() * 1000) },
+    // { id: "14", coupleId: 14, name: "hand", path: Milan, index: Math.floor(Math.random() * 1000) },
+    // { id: "15", coupleId: 15, name: "hand", path: Mazembe, index: Math.floor(Math.random() * 1000) },
+    // { id: "16", coupleId: 16, name: "hand", path: Boca, index: Math.floor(Math.random() * 1000) },
     { id: "17", coupleId: 1, name: "hand", path: Taraji, index: Math.floor(Math.random() * 1000) },
     { id: "18", coupleId: 2, name: "Birthday", path: Barcelona, index: Math.floor(Math.random() * 1000) },
     { id: "19", coupleId: 3, name: "hand", path: Madrid, index: Math.floor(Math.random() * 1000) },
@@ -67,10 +67,10 @@ const ICONS: Icon[] = [
     { id: "26", coupleId: 10, name: "hand", path: Bayern, index: Math.floor(Math.random() * 1000) },
     { id: "27", coupleId: 11, name: "hand", path: Dortmund, index: Math.floor(Math.random() * 1000) },
     { id: "28", coupleId: 12, name: "hand", path: Juventus, index: Math.floor(Math.random() * 1000) },
-    { id: "29", coupleId: 13, name: "hand", path: Inter, index: Math.floor(Math.random() * 1000) },
-    { id: "30", coupleId: 14, name: "hand", path: Milan, index: Math.floor(Math.random() * 1000) },
-    { id: "31", coupleId: 15, name: "hand", path: Mazembe, index: Math.floor(Math.random() * 1000) },
-    { id: "32", coupleId: 16, name: "hand", path: Boca, index: Math.floor(Math.random() * 1000) },
+    // { id: "29", coupleId: 13, name: "hand", path: Inter, index: Math.floor(Math.random() * 1000) },
+    // { id: "30", coupleId: 14, name: "hand", path: Milan, index: Math.floor(Math.random() * 1000) },
+    // { id: "31", coupleId: 15, name: "hand", path: Mazembe, index: Math.floor(Math.random() * 1000) },
+    // { id: "32", coupleId: 16, name: "hand", path: Boca, index: Math.floor(Math.random() * 1000) },
 ]
 
 
@@ -86,7 +86,6 @@ export const MainScreen = () => {
     const [user2Score, setUSer2Score] = useState<number>(0)
     const [user3Score, setUSer3Score] = useState<number>(0)
     const [user4Score, setUSer4Score] = useState<number>(0)
-    const [shownIcons, setShownIcons] = useState<any[]>([])
     const [visibleIcons, setVisibleIcons] = useState(new Set())
 
 
@@ -108,7 +107,6 @@ export const MainScreen = () => {
         setUSer3Score(0)
         setUSer4Score(0)
         setCurrentUser(1)
-        setShownIcons([])
         setFirstChoice({} as Icon)
         setSecondChoice({} as Icon)
 
@@ -143,39 +141,34 @@ export const MainScreen = () => {
 
     const makeLater = () => {
         setTimeout(() => {
-            const _shownIons = shownIcons.slice(0, -2)
-            setShownIcons(_shownIons)
             visibleIcons.delete(firstChoice.id)
             visibleIcons.delete(secondChoice.id)
             setVisibleIcons(visibleIcons)
             setFirstChoice({} as Icon)
             setSecondChoice({} as Icon)
             setCurrentUser(p => p == 4 ? 1 : p + 1)
-        }, 1500)
+        }, 0)
 
     }
 
     const handleClick = (el: Icon) => {
-        if (shownIcons.includes(el.id)) {
+        if (Array.from(visibleIcons).includes(el.id)) {
             return
         }
         if (whichPress == 1) {
+            console.log("from again")
             setFirstChoice(el)
-            const _shownIcons = [...shownIcons, el.id]
-            setShownIcons(_shownIcons)
             setWhichPress(2)
             visibleIcons.add(el.id)
             setVisibleIcons(visibleIcons)
         }
-        else {
+        else if (whichPress == 2) {
+            setWhichPress(3)
             setSecondChoice(el)
-            const _shownIcons = [...shownIcons, el.id]
-            setShownIcons(_shownIcons)
             setWhichPress(1)
             visibleIcons.add(el.id)
             setVisibleIcons(visibleIcons)
         }
-
     }
 
     const chnageBg = () => {
@@ -224,9 +217,11 @@ export const MainScreen = () => {
                                 {
                                     // shownIcons.includes(el?.id) 
                                     Array.from(visibleIcons).includes(el.id)
-                                        ? <Image source={el.path} style={{ ...styles.icon, width: 45, height: 45 }} resizeMode={'contain'} /> :
-                                        <Image source={Qestion3} style={styles.icon} resizeMode={'contain'} />
-                                    // <View style={styles.icon} />
+                                        ? <Image source={el.path} style={{ ...styles.icon, width: 60, height: 60, }} resizeMode={'contain'} /> :
+                                        // <Image source={Qestion3} style={styles.icon} resizeMode={'contain'} />
+                                    <View style={{...styles.icon,borderWidth:5,borderColor:'#dedede',width:70,height:70,borderRadius:35,justifyContent:'center',alignItems:'center'}}>
+                                        <View style={{height:45,width:45,borderRadius:45,backgroundColor:"#dedede"}}/>
+                                    </View>
                                 }
                             </TouchableOpacity>
                         )
@@ -243,7 +238,6 @@ export const MainScreen = () => {
                 }}>
                     <Text style={{ ...styles.scoreLabel, color: currentUser == 4 ? "#FFFFFF" : "#F9C067" }}>{user4Score}</Text>
                 </View>
-                <Text>{JSON.stringify(Array.from(visibleIcons))}</Text>
                 <View style={{
                     ...styles.scoreContainer,
                     backgroundColor: currentUser == 3 ? '#57569C' : '#FFFFFF',
@@ -252,10 +246,7 @@ export const MainScreen = () => {
                     <Text style={{ ...styles.scoreLabel, color: currentUser == 3 ? "#FFFFFF" : "#57569C" }}>{user3Score}</Text>
                 </View>
             </View>
-            <View style={styles.bottomSpace}>
-                <Text>{JSON.stringify(firstChoice)}</Text>
-                <Text>{JSON.stringify(secondChoice)}</Text>
-            </View>
+            <View style={styles.bottomSpace}/>
         </View>
     )
 }
@@ -279,13 +270,15 @@ const styles = StyleSheet.create({
         // backgroundColor: 'red',
     },
     iconConatiner: {
-        width: 60,
-        height: 60,
-        borderRadius: 60,
-        margin: 10,
+        width: 70,
+        height: 70,
+        borderRadius: 35,
+        marginVertical: 13,
+        marginHorizontal:6,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f1f1f1'
+        backgroundColor: '#f1f1f1',
+        // overflow:'hidden'
     },
     icon: {
         width: 40,
@@ -301,7 +294,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         width: "100%",
-        height: 50,
+        height:80,
         paddingHorizontal: 20,
     },
     scoreContainer: {
@@ -319,7 +312,7 @@ const styles = StyleSheet.create({
         fontWeight: '700'
     },
     bottomSpace: {
-        height: 30,
+        height: 10,
         width: "100%",
         paddingStart: 50
     }
