@@ -293,6 +293,5 @@ const styles = StyleSheet.create({
     bottomSpace: {
         height: 10,
         width: "100%",
-        // backgroundColor: 'pink'
     }
 })
