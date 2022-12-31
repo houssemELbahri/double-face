@@ -14,11 +14,19 @@ import Dortmund from '../../icons/dortmund.png'
 import Juventus from '../../icons/juventus.png'
 import Inter from '../../icons/inter.png'
 import Milan from '../../icons/milan.png'
-import Eye from '../../icons/eye.png'
 import Boca from '../../icons/boca.png'
 import Mazembe from '../../icons/mazembe.png'
+import Qestion3 from '../../icons/question3.png'
 
 
+
+
+const USERCOLORS = {
+    0: { state: "absent", color: "#FB3640" },
+    1: { state: "present", color: "#21CB88" },
+    2: { state: "toCome", color: "#57569C" },
+    3: { state: "late", color: "#F9C067" },
+}
 
 type Icon = {
     id: string,
@@ -70,7 +78,7 @@ const ICONS: Icon[] = [
 
 export const MainScreen = () => {
 
-    const [user, setUser] = useState(0)
+    const [user, setUser] = useState(1)
     const [firstChoice, setFirstChoice] = useState<Icon>({} as Icon)
     const [secondChoice, setSecondChoice] = useState<Icon>({} as Icon)
     const [whichPress, setWhichPress] = useState(1)
@@ -96,18 +104,9 @@ export const MainScreen = () => {
 
     useEffect(() => {
         if (Object.keys(firstChoice).length == 0 || Object.keys(secondChoice).length == 0) {
-            console.log("from one")
-            console.log("firstChoice", firstChoice)
-            console.log("secondChoice", secondChoice)
-            console.log("from one")
-
             return
         }
         if (firstChoice?.coupleId == secondChoice?.coupleId) {
-            console.log("from two")
-            console.log("firstChoice", firstChoice)
-            console.log("secondChoice", secondChoice)
-            console.log("from two")
             setFirstChoice({} as Icon)
             setSecondChoice({} as Icon)
             if (user == 1) {
@@ -124,11 +123,6 @@ export const MainScreen = () => {
             }
         }
         else if (firstChoice?.coupleId != secondChoice?.coupleId) {
-            console.log("from three")
-            console.log("firstChoice", firstChoice)
-            console.log("secondChoice", secondChoice)
-            console.log("from three")
-            setUser(p => p == 4 ? 1 : p + 1)
             makeLater()
             setFirstChoice({} as Icon)
             setSecondChoice({} as Icon)
@@ -139,6 +133,7 @@ export const MainScreen = () => {
         setTimeout(() => {
             const _shownIons = shownIcons.slice(0, -2)
             setShownIcons(_shownIons)
+            setUser(p => p == 4 ? 1 : p + 1)
         }, 1500)
 
     }
@@ -162,42 +157,77 @@ export const MainScreen = () => {
 
     }
 
+    const chnageBg = () => {
+        if (user == 1) {
+            return "#FB3640"
+        }
+        else if (user == 2) {
+            return "#21CB88"
+        }
+        else if (user == 3) {
+            return "#57569C"
+        }
+        else {
+            return "#F9C067"
+        }
+    }
+
 
 
     return (
-        <View style={styles.mainContainer}>
-            {ICONS
-                // .map((e) => {
-                //     return ({ ...e, index: Math.random() })
-                // })
-                .sort((a, b) => a.index - b.index)?.map((el: Icon) => {
-                    return (
-                        <TouchableOpacity
-                            onPress={() => { handleClick(el) }}
-                            key={el.id}
-                            style={styles.iconConatiner}>
-                            {shownIcons.includes(el?.id) ? <Image source={el.path} style={styles.icon} resizeMode={'contain'} /> :
-                                //  <Image source={Eye} style={styles.icon} resizeMode={'contain'}/> 
-                                <View style={styles.icon} />
-                            }
-                        </TouchableOpacity>
-                    )
-                })
+        <View style={{ ...styles.mainContainer, backgroundColor: chnageBg() }}>
+            <View style={styles.scoreRow}>
+                <View style={{
+                    ...styles.scoreContainer,
+                    backgroundColor: user == 1 ? '#FB3640' : '#FFFFFF',
+                    borderColor: user == 1 ? "#FFFFFF" : "#FB3640"
+                }}>
+                    <Text style={{ ...styles.scoreLabel, color: user == 1 ? "#FFFFFF" : "#FB3640" }}>{user1Score}</Text>
+                </View>
+                <View style={{
+                    ...styles.scoreContainer,
+                    backgroundColor: user == 2 ? '#21CB88' : '#FFFFFF',
+                    borderColor: user == 2 ? "#FFFFFF" : "#21CB88"
+                }}>
+                    <Text style={{ ...styles.scoreLabel, color: user == 2 ? "#FFFFFF" : "#21CB88" }}>{user2Score}</Text>
+                </View>
+            </View>
+            <View style={styles.iconsContainer}>
+                {ICONS
+                    .sort((a, b) => a.index - b.index)?.map((el: Icon) => {
+                        return (
+                            <TouchableOpacity
+                                onPress={() => { handleClick(el) }}
+                                key={el.id}
+                                style={styles.iconConatiner}>
+                                {shownIcons.includes(el?.id) ? <Image source={el.path} style={styles.icon} resizeMode={'contain'} /> :
+                                     <Image source={Qestion3} style={styles.icon} resizeMode={'contain'}/> 
+                                    // <View style={styles.icon} />
+                                }
+                            </TouchableOpacity>
+                        )
+                    })
 
 
-            }
-            <View style={{ backgroundColor: 'red', position: 'absolute', top: 0, left: 0, width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ color: "white", fontSize: 30 }}>{user1Score}</Text>
+                }
             </View>
-            <View style={{ backgroundColor: 'green', position: 'absolute', top: 0, right: 0, width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ color: "white", fontSize: 30 }}>{user2Score}</Text>
+            <View style={styles.scoreRow}>
+                <View style={{
+                    ...styles.scoreContainer,
+                    backgroundColor: user == 4 ? '#F9C067' : '#FFFFFF',
+                    borderColor: user == 4 ? "#FFFFFF" : "#F9C067"
+                }}>
+                    <Text style={{ ...styles.scoreLabel, color: user == 4 ? "#FFFFFF" : "#F9C067" }}>{user3Score}</Text>
+                </View>
+                <View style={{
+                    ...styles.scoreContainer,
+                    backgroundColor: user == 3 ? '#57569C' : '#FFFFFF',
+                    borderColor: user == 3 ? "#FFFFFF" : "#57569C"
+                }}>
+                    <Text style={{ ...styles.scoreLabel, color: user == 3 ? "#FFFFFF" : "#57569C" }}>{user4Score}</Text>
+                </View>
             </View>
-            <View style={{ backgroundColor: 'blue', position: 'absolute', bottom: 0, right: 0, width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ color: "white", fontSize: 30 }}>{user3Score}</Text>
-            </View>
-            <View style={{ backgroundColor: '#FFFF00', position: 'absolute', bottom: 0, left: 0, width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ color: "#dedede", fontSize: 30 }}>{user4Score}</Text>
-            </View>
+            <View style={styles.bottomSpace} />
         </View>
     )
 }
@@ -206,13 +236,19 @@ export const MainScreen = () => {
 
 const styles = StyleSheet.create({
     mainContainer: {
-        // backgroundColor:'red',
         width: '100%',
         height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        // backgroundColor: 'green',
+    },
+    iconsContainer: {
+        flex: 1,
         flexDirection: 'row',
         flexWrap: 'wrap',
         alignContent: 'center',
         justifyContent: 'center',
+        // backgroundColor: 'red',
     },
     iconConatiner: {
         width: 60,
@@ -221,10 +257,42 @@ const styles = StyleSheet.create({
         margin: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: "#7371FC30",
+        backgroundColor: '#f1f1f1'
     },
     icon: {
         width: 40,
         height: 40
+    },
+    hiddenIcon: {
+        width: 40,
+        height: 40,
+        backgroundColor: '#FFFFFF'
+    },
+    scoreRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: "100%",
+        height: 50,
+        paddingHorizontal: 20,
+    },
+    scoreContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 3
+    },
+    scoreLabel: {
+        color: "#dedede",
+        fontSize: 30,
+        fontStyle:'normal',
+        fontWeight:'700'
+    },
+    bottomSpace: {
+        height: 10,
+        width: "100%",
+        // backgroundColor: 'pink'
     }
 })

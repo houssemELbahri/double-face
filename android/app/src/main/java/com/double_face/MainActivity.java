@@ -17,11 +17,11 @@ public class MainActivity extends ReactActivity {
     return "double_face";
   }
 
-
+/////////this part is added to make app on full window
 @Override
     public void onCreate(Bundle savedInstanceState) {
     super.onCreate(null);
-    hideNavigationBar(); //this line added by houssem bahri
+    hideNavigationBar();
 }
 
 @Override
@@ -36,6 +36,8 @@ public class MainActivity extends ReactActivity {
     View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
     View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 }
+
+/////////this part is added to make app on full window
 
   /**
    * Returns the instance of the {@link ReactActivityDelegate}. There the RootView is created and
