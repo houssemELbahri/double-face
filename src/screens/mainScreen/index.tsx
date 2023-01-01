@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { View, TouchableOpacity, Text, Image, Alert, StyleSheet } from 'react-native'
 import Taraji from '../../icons/taraji.png'
 import Barcelona from '../../icons/barcelona.png'
@@ -33,50 +33,53 @@ type Icon = {
     coupleId: number,
     name: string,
     path: any,
-    index: number
+    index: number,
+    url?: string,
 }
 
 
 
 const ICONS: Icon[] = [
-    { id: "1", coupleId: 1, name: "hand", path: Taraji, index: Math.floor(Math.random() * 1000) },
-    { id: "2", coupleId: 2, name: "Birthday", path: Barcelona, index: Math.floor(Math.random() * 1000) },
-    { id: "3", coupleId: 3, name: "hand", path: Madrid, index: Math.floor(Math.random() * 1000) },
-    { id: "4", coupleId: 4, name: "hand", path: Liverpool, index: Math.floor(Math.random() * 1000) },
-    { id: "5", coupleId: 5, name: "hand", path: City, index: Math.floor(Math.random() * 1000) },
-    { id: "6", coupleId: 6, name: "hand", path: Arsenal, index: Math.floor(Math.random() * 1000) },
-    { id: "7", coupleId: 7, name: "hand", path: Psg, index: Math.floor(Math.random() * 1000) },
-    { id: "8", coupleId: 8, name: "hand", path: Club, index: Math.floor(Math.random() * 1000) },
-    { id: "9", coupleId: 9, name: "hand", path: Etoile, index: Math.floor(Math.random() * 1000) },
-    { id: "10", coupleId: 10, name: "hand", path: Bayern, index: Math.floor(Math.random() * 1000) },
-    { id: "11", coupleId: 11, name: "hand", path: Dortmund, index: Math.floor(Math.random() * 1000) },
-    { id: "12", coupleId: 12, name: "hand", path: Juventus, index: Math.floor(Math.random() * 1000) },
-    // { id: "13", coupleId: 13, name: "hand", path: Inter, index: Math.floor(Math.random() * 1000) },
-    // { id: "14", coupleId: 14, name: "hand", path: Milan, index: Math.floor(Math.random() * 1000) },
-    // { id: "15", coupleId: 15, name: "hand", path: Mazembe, index: Math.floor(Math.random() * 1000) },
-    // { id: "16", coupleId: 16, name: "hand", path: Boca, index: Math.floor(Math.random() * 1000) },
-    { id: "17", coupleId: 1, name: "hand", path: Taraji, index: Math.floor(Math.random() * 1000) },
-    { id: "18", coupleId: 2, name: "Birthday", path: Barcelona, index: Math.floor(Math.random() * 1000) },
-    { id: "19", coupleId: 3, name: "hand", path: Madrid, index: Math.floor(Math.random() * 1000) },
-    { id: "20", coupleId: 4, name: "hand", path: Liverpool, index: Math.floor(Math.random() * 1000) },
-    { id: "21", coupleId: 5, name: "hand", path: City, index: Math.floor(Math.random() * 1000) },
-    { id: "22", coupleId: 6, name: "hand", path: Arsenal, index: Math.floor(Math.random() * 1000) },
-    { id: "23", coupleId: 7, name: "hand", path: Psg, index: Math.floor(Math.random() * 1000) },
-    { id: "24", coupleId: 8, name: "hand", path: Club, index: Math.floor(Math.random() * 1000) },
-    { id: "25", coupleId: 9, name: "hand", path: Etoile, index: Math.floor(Math.random() * 1000) },
-    { id: "26", coupleId: 10, name: "hand", path: Bayern, index: Math.floor(Math.random() * 1000) },
-    { id: "27", coupleId: 11, name: "hand", path: Dortmund, index: Math.floor(Math.random() * 1000) },
-    { id: "28", coupleId: 12, name: "hand", path: Juventus, index: Math.floor(Math.random() * 1000) },
-    // { id: "29", coupleId: 13, name: "hand", path: Inter, index: Math.floor(Math.random() * 1000) },
-    // { id: "30", coupleId: 14, name: "hand", path: Milan, index: Math.floor(Math.random() * 1000) },
-    // { id: "31", coupleId: 15, name: "hand", path: Mazembe, index: Math.floor(Math.random() * 1000) },
-    // { id: "32", coupleId: 16, name: "hand", path: Boca, index: Math.floor(Math.random() * 1000) },
+    { id: "1", coupleId: 1, name: "hand", path: Taraji, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+    { id: "2", coupleId: 2, name: "Birthday", path: Barcelona, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/316540592_686526436203869_576966687657651084_n.jpg?stp=c0.5.480.478a_dst-jpg_p480x480&_nc_cat=111&ccb=1-7&_nc_sid=7206a8&_nc_ohc=OCaBnN3QUgEAX8kD_vE&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfBiLT8kDbKNLHNAffCVZrMz66og1ZBa9-tOrL-dFbI9kQ&oe=63B5CC14" },
+    { id: "3", coupleId: 3, name: "hand", path: Madrid, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/277445671_1348782168867037_4885761443821397914_n.jpg?stp=dst-jpg_s480x480&_nc_cat=108&ccb=1-7&_nc_sid=7206a8&_nc_ohc=kXdYeCTbidgAX9FQSYa&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfCXZhE-Yuhg11pFtubSDMOrksBKNSWQPGXKKgff5LRqAQ&oe=63B61223" },
+    { id: "4", coupleId: 4, name: "hand", path: Liverpool, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-6/275781748_485361929745800_9030746912234805304_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=j0TiOPTYTzkAX8jdTlj&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfAxmd-IVj8H6YSL6x-fQUAXzugyac_RkD12tQ0gxF_Djw&oe=63B69783" },
+    { id: "5", coupleId: 5, name: "hand", path: City, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/266429146_3163514153868691_2161370553049447112_n.jpg?stp=dst-jpg_s480x480&_nc_cat=101&ccb=1-7&_nc_sid=7206a8&_nc_ohc=f5gTJ-IDWm4AX9m84Ab&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfBlGPm2do6st1akMVLkAmZP4v4G4rzQ1oUy4gwr1vZlNg&oe=63B6DE3D" },
+    { id: "6", coupleId: 6, name: "hand", path: Arsenal, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-6/241866430_1052332502203249_9169990575304630079_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=174925&_nc_ohc=D3aP7nCv5-EAX8Nhds_&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfDW9jd1nuJ7X19mQpJFYJQR_FLWgl6529Mj2BHeeN3_uA&oe=63B7206F" },
+    { id: "7", coupleId: 7, name: "hand", path: Psg, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-1/31901768_1851320628221464_3494696248873582592_n.jpg?stp=dst-jpg_p480x480&_nc_cat=100&ccb=1-7&_nc_sid=7206a8&_nc_ohc=_2daAmAqZjQAX_T2qV1&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfDJWpZEjxpUjGc16-SBq8QOixfAAQK8_aNwob4QOuV-EQ&oe=63D8E2B2" },
+    { id: "8", coupleId: 8, name: "hand", path: Club, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-6/287397367_3222292074718786_6957149467743667895_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=174925&_nc_ohc=HsFb3EGs8MUAX_wai3V&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfANb0Yu_W98Aj_-dZu-2Ve0lpAsgC1Y4yQB6ynWdy46hw&oe=63B5C292" },
+    { id: "9", coupleId: 9, name: "hand", path: Etoile, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/287729003_4903540219757968_1344676895429687998_n.jpg?stp=dst-jpg_p480x480&_nc_cat=109&ccb=1-7&_nc_sid=7206a8&_nc_ohc=V_SZE3S1uogAX_A1xcB&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfCBxYROor3ljpzIQif7aIRkLYMs1btCnmbBXWKbLbd5dQ&oe=63B6ED0E" },
+    { id: "10", coupleId: 10, name: "hand", path: Bayern, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/274680329_1866698076853203_397477546147359775_n.jpg?stp=dst-jpg_s480x480&_nc_cat=105&ccb=1-7&_nc_sid=7206a8&_nc_ohc=scmi1x7Xa2AAX9ljFp7&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfByTSk6fJbHe5a7-ZDAH8K-FGDeCMa4-pSeR2JLYbrGdw&oe=63B76B33" },
+    { id: "11", coupleId: 11, name: "hand", path: Dortmund, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.18169-9/1001472_184701428362543_1850406000_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=de6eea&_nc_ohc=JHWskb3ACBAAX9fMa11&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfDqPSyEEJKzT99Hm8YkREZw0hBwWIG4t1_t0x0sNPFp3Q&oe=63D8F8D6" },
+    { id: "12", coupleId: 12, name: "hand", path: Juventus, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-1/203313383_5633041483436821_2941268785956965258_n.jpg?stp=dst-jpg_s480x480&_nc_cat=110&ccb=1-7&_nc_sid=f67be1&_nc_ohc=6jWXx_7cHcUAX9Q1i57&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfBYang2tZMKtFGdn8sJU_ZPNIlVQgxX2IlDsQL7_FC-KQ&oe=63D90403" },
+    // { id: "13", coupleId: 13, name: "hand", path: Inter, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+    // { id: "14", coupleId: 14, name: "hand", path: Milan, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+    // { id: "15", coupleId: 15, name: "hand", path: Mazembe, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+    // { id: "16", coupleId: 16, name: "hand", path: Boca, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+    { id: "17", coupleId: 1, name: "hand", path: Taraji, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+    { id: "18", coupleId: 2, name: "Birthday", path: Barcelona, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/316540592_686526436203869_576966687657651084_n.jpg?stp=c0.5.480.478a_dst-jpg_p480x480&_nc_cat=111&ccb=1-7&_nc_sid=7206a8&_nc_ohc=OCaBnN3QUgEAX8kD_vE&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfBiLT8kDbKNLHNAffCVZrMz66og1ZBa9-tOrL-dFbI9kQ&oe=63B5CC14" },
+    { id: "19", coupleId: 3, name: "hand", path: Madrid, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/277445671_1348782168867037_4885761443821397914_n.jpg?stp=dst-jpg_s480x480&_nc_cat=108&ccb=1-7&_nc_sid=7206a8&_nc_ohc=kXdYeCTbidgAX9FQSYa&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfCXZhE-Yuhg11pFtubSDMOrksBKNSWQPGXKKgff5LRqAQ&oe=63B61223" },
+    { id: "20", coupleId: 4, name: "hand", path: Liverpool, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-6/275781748_485361929745800_9030746912234805304_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=j0TiOPTYTzkAX8jdTlj&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfAxmd-IVj8H6YSL6x-fQUAXzugyac_RkD12tQ0gxF_Djw&oe=63B69783" },
+    { id: "21", coupleId: 5, name: "hand", path: City, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/266429146_3163514153868691_2161370553049447112_n.jpg?stp=dst-jpg_s480x480&_nc_cat=101&ccb=1-7&_nc_sid=7206a8&_nc_ohc=f5gTJ-IDWm4AX9m84Ab&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfBlGPm2do6st1akMVLkAmZP4v4G4rzQ1oUy4gwr1vZlNg&oe=63B6DE3D" },
+    { id: "22", coupleId: 6, name: "hand", path: Arsenal, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-6/241866430_1052332502203249_9169990575304630079_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=174925&_nc_ohc=D3aP7nCv5-EAX8Nhds_&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfDW9jd1nuJ7X19mQpJFYJQR_FLWgl6529Mj2BHeeN3_uA&oe=63B7206F" },
+    { id: "23", coupleId: 7, name: "hand", path: Psg, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-1/31901768_1851320628221464_3494696248873582592_n.jpg?stp=dst-jpg_p480x480&_nc_cat=100&ccb=1-7&_nc_sid=7206a8&_nc_ohc=_2daAmAqZjQAX_T2qV1&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfDJWpZEjxpUjGc16-SBq8QOixfAAQK8_aNwob4QOuV-EQ&oe=63D8E2B2" },
+    { id: "24", coupleId: 8, name: "hand", path: Club, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-6/287397367_3222292074718786_6957149467743667895_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=174925&_nc_ohc=HsFb3EGs8MUAX_wai3V&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfANb0Yu_W98Aj_-dZu-2Ve0lpAsgC1Y4yQB6ynWdy46hw&oe=63B5C292" },
+    { id: "25", coupleId: 9, name: "hand", path: Etoile, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/287729003_4903540219757968_1344676895429687998_n.jpg?stp=dst-jpg_p480x480&_nc_cat=109&ccb=1-7&_nc_sid=7206a8&_nc_ohc=V_SZE3S1uogAX_A1xcB&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfCBxYROor3ljpzIQif7aIRkLYMs1btCnmbBXWKbLbd5dQ&oe=63B6ED0E" },
+    { id: "26", coupleId: 10, name: "hand", path: Bayern, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/274680329_1866698076853203_397477546147359775_n.jpg?stp=dst-jpg_s480x480&_nc_cat=105&ccb=1-7&_nc_sid=7206a8&_nc_ohc=scmi1x7Xa2AAX9ljFp7&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfByTSk6fJbHe5a7-ZDAH8K-FGDeCMa4-pSeR2JLYbrGdw&oe=63B76B33" },
+    { id: "27", coupleId: 11, name: "hand", path: Dortmund, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.18169-9/1001472_184701428362543_1850406000_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=de6eea&_nc_ohc=JHWskb3ACBAAX9fMa11&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfDqPSyEEJKzT99Hm8YkREZw0hBwWIG4t1_t0x0sNPFp3Q&oe=63D8F8D6" },
+    { id: "28", coupleId: 12, name: "hand", path: Juventus, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-1/203313383_5633041483436821_2941268785956965258_n.jpg?stp=dst-jpg_s480x480&_nc_cat=110&ccb=1-7&_nc_sid=f67be1&_nc_ohc=6jWXx_7cHcUAX9Q1i57&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfBYang2tZMKtFGdn8sJU_ZPNIlVQgxX2IlDsQL7_FC-KQ&oe=63D90403" },
+    // { id: "29", coupleId: 13, name: "hand", path: Inter, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+    // { id: "30", coupleId: 14, name: "hand", path: Milan, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+    // { id: "31", coupleId: 15, name: "hand", path: Mazembe, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+    // { id: "32", coupleId: 16, name: "hand", path: Boca, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
 ]
 
 
 
 
-export const MainScreen = () => {
+export const MainScreen = ({ navigation, route }) => {
+
+    const option = route.params.option
 
     const [currentUser, setCurrentUser] = useState(1)
     const [firstChoice, setFirstChoice] = useState<Icon>({} as Icon)
@@ -87,7 +90,50 @@ export const MainScreen = () => {
     const [user3Score, setUSer3Score] = useState<number>(0)
     const [user4Score, setUSer4Score] = useState<number>(0)
     const [visibleIcons, setVisibleIcons] = useState(new Set())
-    const [tmpTable, setTmpTable] = useState(ICONS)
+    // const [tmpTable, setTmpTable] = useState(ICONS)
+
+
+
+
+
+    const PICTURES = useMemo(() => (
+        [
+            { id: "1", coupleId: 1, name: "hand", path: Taraji, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+            { id: "2", coupleId: 2, name: "Birthday", path: Barcelona, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/316540592_686526436203869_576966687657651084_n.jpg?stp=c0.5.480.478a_dst-jpg_p480x480&_nc_cat=111&ccb=1-7&_nc_sid=7206a8&_nc_ohc=OCaBnN3QUgEAX8kD_vE&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfBiLT8kDbKNLHNAffCVZrMz66og1ZBa9-tOrL-dFbI9kQ&oe=63B5CC14" },
+            { id: "3", coupleId: 3, name: "hand", path: Madrid, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/277445671_1348782168867037_4885761443821397914_n.jpg?stp=dst-jpg_s480x480&_nc_cat=108&ccb=1-7&_nc_sid=7206a8&_nc_ohc=kXdYeCTbidgAX9FQSYa&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfCXZhE-Yuhg11pFtubSDMOrksBKNSWQPGXKKgff5LRqAQ&oe=63B61223" },
+            { id: "4", coupleId: 4, name: "hand", path: Liverpool, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-6/275781748_485361929745800_9030746912234805304_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=j0TiOPTYTzkAX8jdTlj&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfAxmd-IVj8H6YSL6x-fQUAXzugyac_RkD12tQ0gxF_Djw&oe=63B69783" },
+            { id: "5", coupleId: 5, name: "hand", path: City, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/266429146_3163514153868691_2161370553049447112_n.jpg?stp=dst-jpg_s480x480&_nc_cat=101&ccb=1-7&_nc_sid=7206a8&_nc_ohc=f5gTJ-IDWm4AX9m84Ab&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfBlGPm2do6st1akMVLkAmZP4v4G4rzQ1oUy4gwr1vZlNg&oe=63B6DE3D" },
+            { id: "6", coupleId: 6, name: "hand", path: Arsenal, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-6/241866430_1052332502203249_9169990575304630079_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=174925&_nc_ohc=D3aP7nCv5-EAX8Nhds_&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfDW9jd1nuJ7X19mQpJFYJQR_FLWgl6529Mj2BHeeN3_uA&oe=63B7206F" },
+            { id: "7", coupleId: 7, name: "hand", path: Psg, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-1/31901768_1851320628221464_3494696248873582592_n.jpg?stp=dst-jpg_p480x480&_nc_cat=100&ccb=1-7&_nc_sid=7206a8&_nc_ohc=_2daAmAqZjQAX_T2qV1&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfDJWpZEjxpUjGc16-SBq8QOixfAAQK8_aNwob4QOuV-EQ&oe=63D8E2B2" },
+            { id: "8", coupleId: 8, name: "hand", path: Club, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-6/287397367_3222292074718786_6957149467743667895_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=174925&_nc_ohc=HsFb3EGs8MUAX_wai3V&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfANb0Yu_W98Aj_-dZu-2Ve0lpAsgC1Y4yQB6ynWdy46hw&oe=63B5C292" },
+            { id: "9", coupleId: 9, name: "hand", path: Etoile, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/287729003_4903540219757968_1344676895429687998_n.jpg?stp=dst-jpg_p480x480&_nc_cat=109&ccb=1-7&_nc_sid=7206a8&_nc_ohc=V_SZE3S1uogAX_A1xcB&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfCBxYROor3ljpzIQif7aIRkLYMs1btCnmbBXWKbLbd5dQ&oe=63B6ED0E" },
+            { id: "10", coupleId: 10, name: "hand", path: Bayern, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/274680329_1866698076853203_397477546147359775_n.jpg?stp=dst-jpg_s480x480&_nc_cat=105&ccb=1-7&_nc_sid=7206a8&_nc_ohc=scmi1x7Xa2AAX9ljFp7&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfByTSk6fJbHe5a7-ZDAH8K-FGDeCMa4-pSeR2JLYbrGdw&oe=63B76B33" },
+            { id: "11", coupleId: 11, name: "hand", path: Dortmund, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.18169-9/1001472_184701428362543_1850406000_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=de6eea&_nc_ohc=JHWskb3ACBAAX9fMa11&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfDqPSyEEJKzT99Hm8YkREZw0hBwWIG4t1_t0x0sNPFp3Q&oe=63D8F8D6" },
+            { id: "12", coupleId: 12, name: "hand", path: Juventus, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-1/203313383_5633041483436821_2941268785956965258_n.jpg?stp=dst-jpg_s480x480&_nc_cat=110&ccb=1-7&_nc_sid=f67be1&_nc_ohc=6jWXx_7cHcUAX9Q1i57&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfBYang2tZMKtFGdn8sJU_ZPNIlVQgxX2IlDsQL7_FC-KQ&oe=63D90403" },
+            // { id: "13", coupleId: 13, name: "hand", path: Inter, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+            // { id: "14", coupleId: 14, name: "hand", path: Milan, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+            // { id: "15", coupleId: 15, name: "hand", path: Mazembe, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+            // { id: "16", coupleId: 16, name: "hand", path: Boca, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+            { id: "17", coupleId: 1, name: "hand", path: Taraji, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+            { id: "18", coupleId: 2, name: "Birthday", path: Barcelona, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/316540592_686526436203869_576966687657651084_n.jpg?stp=c0.5.480.478a_dst-jpg_p480x480&_nc_cat=111&ccb=1-7&_nc_sid=7206a8&_nc_ohc=OCaBnN3QUgEAX8kD_vE&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfBiLT8kDbKNLHNAffCVZrMz66og1ZBa9-tOrL-dFbI9kQ&oe=63B5CC14" },
+            { id: "19", coupleId: 3, name: "hand", path: Madrid, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/277445671_1348782168867037_4885761443821397914_n.jpg?stp=dst-jpg_s480x480&_nc_cat=108&ccb=1-7&_nc_sid=7206a8&_nc_ohc=kXdYeCTbidgAX9FQSYa&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfCXZhE-Yuhg11pFtubSDMOrksBKNSWQPGXKKgff5LRqAQ&oe=63B61223" },
+            { id: "20", coupleId: 4, name: "hand", path: Liverpool, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-6/275781748_485361929745800_9030746912234805304_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=j0TiOPTYTzkAX8jdTlj&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfAxmd-IVj8H6YSL6x-fQUAXzugyac_RkD12tQ0gxF_Djw&oe=63B69783" },
+            { id: "21", coupleId: 5, name: "hand", path: City, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/266429146_3163514153868691_2161370553049447112_n.jpg?stp=dst-jpg_s480x480&_nc_cat=101&ccb=1-7&_nc_sid=7206a8&_nc_ohc=f5gTJ-IDWm4AX9m84Ab&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfBlGPm2do6st1akMVLkAmZP4v4G4rzQ1oUy4gwr1vZlNg&oe=63B6DE3D" },
+            { id: "22", coupleId: 6, name: "hand", path: Arsenal, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-6/241866430_1052332502203249_9169990575304630079_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=174925&_nc_ohc=D3aP7nCv5-EAX8Nhds_&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfDW9jd1nuJ7X19mQpJFYJQR_FLWgl6529Mj2BHeeN3_uA&oe=63B7206F" },
+            { id: "23", coupleId: 7, name: "hand", path: Psg, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-1/31901768_1851320628221464_3494696248873582592_n.jpg?stp=dst-jpg_p480x480&_nc_cat=100&ccb=1-7&_nc_sid=7206a8&_nc_ohc=_2daAmAqZjQAX_T2qV1&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfDJWpZEjxpUjGc16-SBq8QOixfAAQK8_aNwob4QOuV-EQ&oe=63D8E2B2" },
+            { id: "24", coupleId: 8, name: "hand", path: Club, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-6/287397367_3222292074718786_6957149467743667895_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=174925&_nc_ohc=HsFb3EGs8MUAX_wai3V&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfANb0Yu_W98Aj_-dZu-2Ve0lpAsgC1Y4yQB6ynWdy46hw&oe=63B5C292" },
+            { id: "25", coupleId: 9, name: "hand", path: Etoile, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/287729003_4903540219757968_1344676895429687998_n.jpg?stp=dst-jpg_p480x480&_nc_cat=109&ccb=1-7&_nc_sid=7206a8&_nc_ohc=V_SZE3S1uogAX_A1xcB&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfCBxYROor3ljpzIQif7aIRkLYMs1btCnmbBXWKbLbd5dQ&oe=63B6ED0E" },
+            { id: "26", coupleId: 10, name: "hand", path: Bayern, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t39.30808-1/274680329_1866698076853203_397477546147359775_n.jpg?stp=dst-jpg_s480x480&_nc_cat=105&ccb=1-7&_nc_sid=7206a8&_nc_ohc=scmi1x7Xa2AAX9ljFp7&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfByTSk6fJbHe5a7-ZDAH8K-FGDeCMa4-pSeR2JLYbrGdw&oe=63B76B33" },
+            { id: "27", coupleId: 11, name: "hand", path: Dortmund, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.18169-9/1001472_184701428362543_1850406000_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=de6eea&_nc_ohc=JHWskb3ACBAAX9fMa11&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfDqPSyEEJKzT99Hm8YkREZw0hBwWIG4t1_t0x0sNPFp3Q&oe=63D8F8D6" },
+            { id: "28", coupleId: 12, name: "hand", path: Juventus, index: Math.floor(Math.random() * 1000), url: "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-1/203313383_5633041483436821_2941268785956965258_n.jpg?stp=dst-jpg_s480x480&_nc_cat=110&ccb=1-7&_nc_sid=f67be1&_nc_ohc=6jWXx_7cHcUAX9Q1i57&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfBYang2tZMKtFGdn8sJU_ZPNIlVQgxX2IlDsQL7_FC-KQ&oe=63D90403" },
+            // { id: "29", coupleId: 13, name: "hand", path: Inter, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+            // { id: "30", coupleId: 14, name: "hand", path: Milan, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+            // { id: "31", coupleId: 15, name: "hand", path: Mazembe, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+            // { id: "32", coupleId: 16, name: "hand", path: Boca, index: Math.floor(Math.random() * 1000),url:"https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/118274838_3174365169350756_7156685445748665905_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=0timCjUPmE8AX_iIIAV&tn=Ha1nH_IF31pxdoq_&_nc_ht=scontent.fnbe1-2.fna&oh=00_AfD079-msZWJ3sKqV5ZWFOEyMn-4zCtA7e0H40oQRnnXJg&oe=63D8F701" },
+        ]
+    ), [])
+
+
 
 
 
@@ -103,15 +149,16 @@ export const MainScreen = () => {
 
 
     const clearAll = () => {
-        setUSer1Score(0)
-        setUSer2Score(0)
-        setUSer3Score(0)
-        setUSer4Score(0)
-        setCurrentUser(1)
-        setFirstChoice({} as Icon)
-        setSecondChoice({} as Icon)
-        setVisibleIcons(new Set())
-        setTmpTable(ICONS)
+        navigation.goBack()
+        // setUSer1Score(0)
+        // setUSer2Score(0)
+        // setUSer3Score(0)
+        // setUSer4Score(0)
+        // setCurrentUser(1)
+        // setFirstChoice({} as Icon)
+        // setSecondChoice({} as Icon)
+        // setVisibleIcons(new Set())
+        // setTmpTable(ICONS)
 
 
 
@@ -189,7 +236,16 @@ export const MainScreen = () => {
         }
     }
 
-
+    const renderIcon = (el) => {
+        if (option == 0) {
+            return (
+                <Image source={el.path} style={{ ...styles.icon, width: 60, height: 60, }} resizeMode={'contain'} />
+            )
+        }
+        else return (
+            <Image source={{ uri: el.url }} style={{ ...styles.icon, width: 60, height: 60, borderRadius: 60 }} resizeMode={'contain'} />
+        )
+    }
 
     return (
         <View style={{ ...styles.mainContainer, backgroundColor: chnageBg() }}>
@@ -210,7 +266,7 @@ export const MainScreen = () => {
                 </View>
             </View>
             <View style={styles.iconsContainer}>
-                {tmpTable
+                {PICTURES
                     .sort((a, b) => a.index - b.index)?.map((el: Icon) => {
                         return (
                             <TouchableOpacity
@@ -220,7 +276,10 @@ export const MainScreen = () => {
                                 {
                                     // shownIcons.includes(el?.id) 
                                     Array.from(visibleIcons).includes(el.id)
-                                        ? <Image source={el.path} style={{ ...styles.icon, width: 60, height: 60, }} resizeMode={'contain'} /> :
+                                        ?
+                                        //  <Image source={el.path} style={{ ...styles.icon, width: 60, height: 60, }} resizeMode={'contain'} /> 
+                                        renderIcon(el)
+                                        :
                                         // <Image source={Qestion3} style={styles.icon} resizeMode={'contain'} />
                                         <View style={{ ...styles.icon, borderWidth: 5, borderColor: '#dedede', width: 70, height: 70, borderRadius: 35, justifyContent: 'center', alignItems: 'center' }}>
                                             <View style={{ height: 45, width: 45, borderRadius: 45, backgroundColor: "#dedede" }} />

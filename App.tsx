@@ -7,27 +7,34 @@ import {
 
 
 import { MainScreen } from './src/screens/mainScreen';
-
+import {AppWithNavigation} from './src/navigations';
 
 
 const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? 'black' : 'black',
-  };
-
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        hidden
-        barStyle={!isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <MainScreen />
-    </SafeAreaView>
+    <AppWithNavigation/>
   );
 };
+
+
+// const App = () => {
+//   const isDarkMode = useColorScheme() === 'dark';
+
+//   const backgroundStyle = {
+//     backgroundColor: isDarkMode ? 'black' : 'black',
+//   };
+
+//   return (
+//     <SafeAreaView style={backgroundStyle}>
+//       <StatusBar
+//         hidden
+//         barStyle={!isDarkMode ? 'light-content' : 'dark-content'}
+//         backgroundColor={backgroundStyle.backgroundColor}
+//       />
+//       <MainScreen />
+//     </SafeAreaView>
+//   );
+// };
 
 
 export default App;
