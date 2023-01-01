@@ -87,18 +87,19 @@ export const MainScreen = () => {
     const [user3Score, setUSer3Score] = useState<number>(0)
     const [user4Score, setUSer4Score] = useState<number>(0)
     const [visibleIcons, setVisibleIcons] = useState(new Set())
+    const [tmpTable, setTmpTable] = useState(ICONS)
 
 
 
-    // useEffect(() => {
-    //     if (user1Score + user2Score + user3Score + user4Score == 1) {
-    //         Alert.alert('Game over', "Start again", [{
-    //             text: "ok", onPress: () => {
-    //                 clearAll()
-    //             }
-    //         }])
-    //     }
-    // }, [])
+    useEffect(() => {
+        if (user1Score + user2Score + user3Score + user4Score == 12) {
+            Alert.alert('Game over', "Start again", [{
+                text: "ok", onPress: () => {
+                    clearAll()
+                }
+            }])
+        }
+    }, [user1Score, user2Score, user3Score, user4Score])
 
 
     const clearAll = () => {
@@ -109,6 +110,9 @@ export const MainScreen = () => {
         setCurrentUser(1)
         setFirstChoice({} as Icon)
         setSecondChoice({} as Icon)
+        setVisibleIcons(new Set())
+        setTmpTable(ICONS)
+
 
 
     }
@@ -156,7 +160,6 @@ export const MainScreen = () => {
             return
         }
         if (whichPress == 1) {
-            console.log("from again")
             setFirstChoice(el)
             setWhichPress(2)
             visibleIcons.add(el.id)
@@ -207,7 +210,7 @@ export const MainScreen = () => {
                 </View>
             </View>
             <View style={styles.iconsContainer}>
-                {ICONS
+                {tmpTable
                     .sort((a, b) => a.index - b.index)?.map((el: Icon) => {
                         return (
                             <TouchableOpacity
@@ -219,9 +222,9 @@ export const MainScreen = () => {
                                     Array.from(visibleIcons).includes(el.id)
                                         ? <Image source={el.path} style={{ ...styles.icon, width: 60, height: 60, }} resizeMode={'contain'} /> :
                                         // <Image source={Qestion3} style={styles.icon} resizeMode={'contain'} />
-                                    <View style={{...styles.icon,borderWidth:5,borderColor:'#dedede',width:70,height:70,borderRadius:35,justifyContent:'center',alignItems:'center'}}>
-                                        <View style={{height:45,width:45,borderRadius:45,backgroundColor:"#dedede"}}/>
-                                    </View>
+                                        <View style={{ ...styles.icon, borderWidth: 5, borderColor: '#dedede', width: 70, height: 70, borderRadius: 35, justifyContent: 'center', alignItems: 'center' }}>
+                                            <View style={{ height: 45, width: 45, borderRadius: 45, backgroundColor: "#dedede" }} />
+                                        </View>
                                 }
                             </TouchableOpacity>
                         )
@@ -246,7 +249,7 @@ export const MainScreen = () => {
                     <Text style={{ ...styles.scoreLabel, color: currentUser == 3 ? "#FFFFFF" : "#57569C" }}>{user3Score}</Text>
                 </View>
             </View>
-            <View style={styles.bottomSpace}/>
+            <View style={styles.bottomSpace} />
         </View>
     )
 }
@@ -274,7 +277,7 @@ const styles = StyleSheet.create({
         height: 70,
         borderRadius: 35,
         marginVertical: 13,
-        marginHorizontal:6,
+        marginHorizontal: 6,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#f1f1f1',
@@ -294,7 +297,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         width: "100%",
-        height:80,
+        height: 80,
         paddingHorizontal: 20,
     },
     scoreContainer: {
